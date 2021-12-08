@@ -4,7 +4,7 @@ use std::fs::File;
 use std::io::Write;
 use tokio_util::codec::{BytesCodec, FramedRead};
 
-use futures_util::{StreamExt};
+use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
 use reqwest::Client;
 
@@ -134,6 +134,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_upload() {
+        if !fs::metadata("nasa.xml").is_ok() {
+            setup().await;
+        }
         let client = reqwest::Client::builder()
             .user_agent("test")
             .danger_accept_invalid_certs(true)
