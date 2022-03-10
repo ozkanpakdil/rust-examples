@@ -646,18 +646,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rust-api"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "serde",
- "serde_derive",
- "serde_json",
- "tokio",
- "warp",
-]
-
-[[package]]
 name = "ryu"
 version = "1.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1075,6 +1063,18 @@ dependencies = [
  "tokio-util",
  "tower-service",
  "tracing",
+]
+
+[[package]]
+name = "warp-rest-api"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "tokio",
+ "warp",
 ]
 
 [[package]]
