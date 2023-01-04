@@ -1,0 +1,17 @@
+[package]
+name = "actix-rest-api"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-rt = "2.6.0"
+actix-web = "4.0.1"
+chrono = "0.4.19"
+serde = "1.0.136"
+serde_derive = "1.0.136"
+serde_json = "1.0.79"
+
+[profile.release]
+strip = true

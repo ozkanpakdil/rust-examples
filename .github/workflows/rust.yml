@@ -1,0 +1,37 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build
+      run: |
+        cd warp-rest-api
+        cargo build --release
+        cd ../actix-rest-api/
+        cargo build --release
+        cd ../axum-rest-api/
+        cargo build --release
+        cd ../rocket-rest-api/
+        # rocket requires nightly
+        rustup override set nightly
+        cargo build --release
+    - uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: true
+        title: "Development Build"
+        files: |
+          rocket-rest-api/target/release/rocket-rest-api
+          warp-rest-api/target/release/warp-rest-api
+          actix-rest-api/target/release/actix-rest-api
+          axum-rest-api/target/release/axum-rest-api
