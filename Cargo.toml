@@ -8,8 +8,11 @@ edition = "2021"
 [dependencies]
 arti-client = "0.8.0"
 futures = "0.3.25"
+once_cell = "1.17.0"
 reqwest = { version = "0.11.10", features = ["stream"] }
+job_scheduler = "*"
 tls-api = { version = "0.7.0", features = ["runtime-tokio"] }
 tls-api-native-tls = { version = "0.7.0", features = ["runtime-tokio"] }
 tokio = { version = "1.18.0", features = ["full"] }
 tokio-stream = "0.1.8"
+tor-rtcompat = "0.8.0"
