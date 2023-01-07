@@ -16,3 +16,8 @@ tls-api-native-tls = { version = "0.7.0", features = ["runtime-tokio"] }
 tokio = { version = "1.18.0", features = ["full"] }
 tokio-stream = "0.1.8"
 tor-rtcompat = "0.8.0"
+warp = "0.3.3"
+lazy_static = "1.4.0"
+
+[profile.release]
+strip = true
