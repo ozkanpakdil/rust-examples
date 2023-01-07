@@ -1,23 +1,16 @@
-#[allow(dead_code)]
-#[allow(unused_imports)]
 use std::collections::HashMap;
-use arti_client::{BootstrapBehavior, TorClient};
-use job_scheduler::{Job, JobScheduler};
-use tor_rtcompat::PreferredRuntime;
-use warp::{self, path::FullPath, Filter, http};
 use std::io::prelude::*;
-use std::net::{IpAddr, TcpStream};
-use std::io::BufReader;
-use std::env;
+use std::net::{IpAddr};
 use std::str::FromStr;
-use futures::{TryFutureExt, TryStreamExt};
+
+use arti_client::{BootstrapBehavior, TorClient};
 use lazy_static::lazy_static;
-use tor_rtcompat::testing__::TestOutcome;
+use tor_rtcompat::PreferredRuntime;
+use warp::{self, Filter};
 use warp::http::StatusCode;
-use warp::hyper::body::HttpBody;
 
 lazy_static! {
-     static ref tor_client: TorClient<PreferredRuntime> = create_new_tor_connection();
+     static ref TOR_CLIENT: TorClient<PreferredRuntime> = create_new_tor_connection();
 }
 
 fn create_new_tor_connection() -> TorClient<PreferredRuntime> {
@@ -34,7 +27,7 @@ async fn main() {
         .and(warp::query::<HashMap<String, String>>())
         .and_then(whois_handler);
 
-    warp::serve(whois).run(([127, 0, 0, 1], 8083)).await;
+    warp::serve(whois).run(([127, 0, 0, 1], 8016)).await;
 }
 
 async fn whois_handler(query: HashMap<String, String>) -> Result<impl warp::Reply, warp::Rejection> {
@@ -46,7 +39,7 @@ async fn whois_handler(query: HashMap<String, String>) -> Result<impl warp::Repl
 }
 
 async fn connect_and_read(domain_whois: &str, data_write: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
-    let mut stream = tor_client.connect(domain_whois).await?;
+    let mut stream = TOR_CLIENT.connect(domain_whois).await?;
     use futures::io::{AsyncReadExt, AsyncWriteExt};
     stream.write_all(format!("{}\n", data_write).as_bytes()).await?; //Send the tld
     stream.flush().await.ok();
