@@ -13,6 +13,8 @@ lazy_static! {
      static ref TOR_CLIENT: TorClient<PreferredRuntime> = create_new_tor_connection();
 }
 
+static mut COUNTER: i32 = 0;
+
 fn create_new_tor_connection() -> TorClient<PreferredRuntime> {
     TorClient::builder()
         .bootstrap_behavior(BootstrapBehavior::OnDemand)
@@ -32,6 +34,10 @@ async fn main() {
 
 async fn whois_handler(query: HashMap<String, String>) -> Result<impl warp::Reply, warp::Rejection> {
     let ip = query.get("ip").unwrap();
+    unsafe {
+        COUNTER += 1;
+        println!("{}-ip:{}", COUNTER, ip);
+    }
     if IpAddr::from_str(ip).is_ok() {
         return Ok(warp::reply::with_status(get_whois_data(ip).await, StatusCode::OK));
     }
