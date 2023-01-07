@@ -1,6 +1,5 @@
 #[allow(dead_code)]
 #[allow(unused_imports)]
-
 use std::collections::HashMap;
 use arti_client::{BootstrapBehavior, TorClient};
 use job_scheduler::{Job, JobScheduler};
@@ -14,42 +13,23 @@ use std::str::FromStr;
 use futures::{TryFutureExt, TryStreamExt};
 use lazy_static::lazy_static;
 use tor_rtcompat::testing__::TestOutcome;
+use warp::http::StatusCode;
 use warp::hyper::body::HttpBody;
 
 lazy_static! {
-     static ref tor_client: TorClient<PreferredRuntime> = TorClient::builder()
+     static ref tor_client: TorClient<PreferredRuntime> = create_new_tor_connection();
+}
+
+fn create_new_tor_connection() -> TorClient<PreferredRuntime> {
+    TorClient::builder()
         .bootstrap_behavior(BootstrapBehavior::OnDemand)
         .create_unbootstrapped()
-    .ok()
-    .unwrap();
+        .ok()
+        .unwrap()
 }
 
 #[tokio::main]
 async fn main() {
-    /*let mut sched = JobScheduler::new();
-
-    sched.add(Job::new("0 0 * * * *".parse().unwrap(), move || {
-        println!("I get executed every 1 hour!");
-        {
-            match TorClient::builder()
-                .bootstrap_behavior(BootstrapBehavior::OnDemand)
-                .create_unbootstrapped()
-            {
-                Ok(client) => tor_client = client,
-                Err(e) => eprintln!("Error creating TOR client: {}", e),
-            }
-        }
-    }));*/
-
-
-    // let test_arti_http_task = test_arti_http(&tor_client);
-    // let test_arti_whois_task = test_arti_whois(&tor_client);
-    // let _ = tokio::join!(test_arti_whois_task);
-
-    // println!("{:?}",get_whois_data("1.2.3.4"));
-
-    // println!("{}",get_whois_data("82.12.84.124", &tor_client).await.join("\n"));
-
     let whois = warp::path("whois")
         .and(warp::query::<HashMap<String, String>>())
         .and_then(whois_handler);
@@ -58,68 +38,12 @@ async fn main() {
 }
 
 async fn whois_handler(query: HashMap<String, String>) -> Result<impl warp::Reply, warp::Rejection> {
-    let ip = query.get("ip");
-
-    let whois_result = get_whois_data("82.12.84.124").await; //perform_whois_lookup(ip);
-
-    Ok(whois_result)
+    let ip = query.get("ip").unwrap();
+    if IpAddr::from_str(ip).is_ok() {
+        return Ok(warp::reply::with_status(get_whois_data(ip).await, StatusCode::OK));
+    }
+    Ok(warp::reply::with_status("wrong ip".to_string(), StatusCode::BAD_REQUEST))
 }
-
-/*async fn test_arti_http(tor_client: &TorClient<PreferredRuntime>) -> Result<(), Box<dyn std::error::Error>> {
-    // Initiate a connection over Tor to example.com, port 80.
-    let mut stream = tor_client.connect(("api.ipify.org", 80)).await?;
-
-    use futures::io::{AsyncReadExt, AsyncWriteExt};
-
-    // Write out an HTTP request.
-    match stream
-        .write_all(b"GET / HTTP/1.1\r\nHost: api.ipify.org\r\nConnection: close\r\n\r\n")
-        .await
-    {
-        Ok(_) => {}
-        Err(e) => {
-            eprintln!("Error writing to stream: {}", e);
-        }
-    };
-
-    // IMPORTANT: Make sure the request was written.
-    // Arti buffers data, so flushing the buffer is usually required.
-    match stream.flush().await {
-        Ok(_) => {}
-        Err(e) => {
-            eprintln!("Error flushing stream: {}", e);
-        }
-    };
-
-    // Read and print the result.
-    let mut buf = Vec::new();
-    match stream.read_to_end(&mut buf).await {
-        Ok(_) => {}
-        Err(e) => {
-            eprintln!("Error reading from stream: {}", e);
-        }
-    };
-
-    println!("{}", String::from_utf8_lossy(&buf));
-    Ok(())
-}
-
-async fn test_arti_whois(tor_client: &TorClient<PreferredRuntime>) -> Result<(), Box<dyn std::error::Error>> {
-    let mut stream = tor_client.connect(("whois.iana.org", 43)).await?;
-
-    use futures::io::{AsyncReadExt, AsyncWriteExt};
-
-    stream.write_all(b"1.2.3.4\r\n").await?;
-
-    stream.flush().await?;
-
-    let mut buf = Vec::new();
-    stream.read_to_end(&mut buf).await?;
-
-    println!("{}", String::from_utf8_lossy(&buf));
-    Ok(())
-}
-*/
 
 async fn connect_and_read(domain_whois: &str, data_write: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
     let mut stream = tor_client.connect(domain_whois).await?;
@@ -132,7 +56,7 @@ async fn connect_and_read(domain_whois: &str, data_write: &str) -> Result<Vec<u8
 }
 
 async fn get_tld_server(tld: &str) -> Option<String> {
-    for line in connect_and_read( "whois.iana.org:43", tld)
+    for line in connect_and_read("whois.iana.org:43", tld)
         .await
         .ok()
         .unwrap()
@@ -163,7 +87,7 @@ async fn get_whois_data(domain: &str) -> String {
         }
     };
 
-    for line in connect_and_read( format!("{}:43", &tld_server[..]).as_str(), domain.as_str())
+    for line in connect_and_read(format!("{}:43", &tld_server[..]).as_str(), domain.as_str())
         .await
         .ok()
         .unwrap()
@@ -180,7 +104,7 @@ async fn get_whois_data(domain: &str) -> String {
 
     match next_server {
         Some(server) => {
-            for line in connect_and_read( format!("{}:43", &server[..]).as_str(), domain.as_str())
+            for line in connect_and_read(format!("{}:43", &server[..]).as_str(), domain.as_str())
                 .await
                 .ok()
                 .unwrap()
