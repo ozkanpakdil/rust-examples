@@ -34,7 +34,7 @@ async fn main() {
         .and(warp::query::<HashMap<String, String>>())
         .and_then(whois_handler);
 
-    warp::serve(whois).run(([127, 0, 0, 1], 8080)).await;
+    warp::serve(whois).run(([127, 0, 0, 1], 8083)).await;
 }
 
 async fn whois_handler(query: HashMap<String, String>) -> Result<impl warp::Reply, warp::Rejection> {
