@@ -39,7 +39,12 @@ async fn whois_handler(query: HashMap<String, String>) -> Result<impl warp::Repl
         println!("{}-ip:{}", COUNTER, ip);
     }
     if IpAddr::from_str(ip).is_ok() {
-        return Ok(warp::reply::with_status(get_whois_data(ip).await, StatusCode::OK));
+        let response=get_whois_data(ip).await;
+        // TODO maybe in the future we can restart from code.
+        // if response.contains("access denied"){
+        //
+        // }
+        return Ok(warp::reply::with_status(response, StatusCode::OK));
     }
     Ok(warp::reply::with_status("wrong ip".to_string(), StatusCode::BAD_REQUEST))
 }
