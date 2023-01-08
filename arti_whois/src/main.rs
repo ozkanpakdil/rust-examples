@@ -33,7 +33,18 @@ async fn main() {
 }
 
 async fn whois_handler(query: HashMap<String, String>) -> Result<impl warp::Reply, warp::Rejection> {
-    let ip = query.get("ip").unwrap();
+    let default = "".to_string();
+    let ip = query.get("ip").unwrap_or(&default);
+
+    Ok(match IpAddr::from_str(ip) {
+        Ok(ip_addr) => warp::reply::with_status(get_whois_data(ip).await, StatusCode::OK),
+        Err(_) => warp::reply::with_status("wrong ip".to_string(), StatusCode::BAD_REQUEST),
+    })
+}
+
+async fn whois_handler_old(query: HashMap<String, String>) -> Result<impl warp::Reply, warp::Rejection> {
+    let default = "".to_string();
+    let ip = query.get("ip").unwrap_or(&default);
     unsafe {
         COUNTER += 1;
         println!("{}-ip:{}", COUNTER, ip);
@@ -63,7 +74,7 @@ async fn get_tld_server(tld: &str) -> Option<String> {
     for line in connect_and_read("whois.iana.org:43", tld)
         .await
         .ok()
-        .unwrap()
+        .unwrap_or(Vec::new())
         .lines() {
         let line = line.unwrap();
         let parts: Vec<String> = line.splitn(2, ":").map(|x| x.to_string()).collect();
