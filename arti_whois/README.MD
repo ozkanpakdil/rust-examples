@@ -1,7 +1,7 @@
 # Call whois via TOR
 arti_whois is a whois service caller, works with tor sockets. developed against [ban](https://www.ripe.net/manage-ips-and-asns/db/support/documentation/ripe-database-acceptable-use-policy/why-did-i-receive-an-error-201-access-denied) 
 
-arti is #tor library for [#rust](https://gitlab.torproject.org/tpo/core/arti) 
+arti is [#tor](https://github.com/topics/tor) client [library](https://gitlab.torproject.org/tpo/core/arti) for [#rust](https://github.com/topics/rust) 
 
 #how to use
 call it with curl or [frizz](https://crates.io/crates/frizz) example call below
