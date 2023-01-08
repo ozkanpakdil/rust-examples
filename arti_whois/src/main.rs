@@ -35,6 +35,9 @@ async fn main() {
 async fn whois_handler(query: HashMap<String, String>) -> Result<impl warp::Reply, warp::Rejection> {
     let default = "".to_string();
     let ip = query.get("ip").unwrap_or(&default);
+    if ip.is_empty() {
+        return Ok(warp::reply::with_status("empty ip".to_string(), StatusCode::BAD_REQUEST));
+    }
     unsafe {
         COUNTER += 1;
         println!("{}-ip:{}", COUNTER, ip);
