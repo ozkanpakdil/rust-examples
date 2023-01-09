@@ -3,8 +3,8 @@ arti_whois is a whois service caller, works with tor sockets. developed against 
 
 arti is [#tor](https://github.com/topics/tor) client [library](https://gitlab.torproject.org/tpo/core/arti) for [#rust](https://github.com/topics/rust) 
 
-#how to use
-call it with curl or [frizz](https://crates.io/crates/frizz) example call below
+# how to use
+run **cargo run** in the project folder and warp starts working for service. then call it with curl or [frizz](https://crates.io/crates/frizz) example call below
 ip whois call
 ```bash
 curl "127.0.0.1:8016/whois?ip=1.1.1.1&source=http://localhost:8080/whois.htm" -v
