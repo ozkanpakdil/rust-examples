@@ -1,3 +1,6 @@
-*/target/*
+debug/
+target/
 .idea
+.cargo-lock
+*.pdb
 
