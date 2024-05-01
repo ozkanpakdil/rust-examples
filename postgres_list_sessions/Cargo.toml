@@ -1,0 +1,10 @@
+[package]
+name = "postgres_list_sessions"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+openssl = "0.10.64"
+postgres = "0.19.7"
+postgres-openssl = "0.5.0"
+rust_decimal = { version = "1.35.0", features = ["db-postgres"] }
