@@ -2,14 +2,22 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
-    "schedule:monthly",
+    "schedule:monthly"
   ],
   "packageRules": [
     {
-      "matchPaths": ["*-api/Cargo.toml"],
-      "matchManagers": ["cargo"],
+      "matchPaths": [
+        "*-api/Cargo.toml"
+      ],
+      "matchManagers": [
+        "cargo"
+      ],
       "groupName": "rust-api-dependencies",
-      "labels": ["dependencies", "rust", "api"],
+      "labels": [
+        "dependencies",
+        "rust",
+        "api"
+      ],
       "commitMessagePrefix": "chore(deps):",
       "automerge": true,
       "automergeType": "pr",
