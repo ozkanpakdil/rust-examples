@@ -6,7 +6,7 @@
   ],
   "packageRules": [
     {
-      "matchPaths": [
+      "matchFileNames": [
         "*-api/Cargo.toml"
       ],
       "matchManagers": [
