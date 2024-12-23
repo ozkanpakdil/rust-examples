@@ -4,6 +4,7 @@ use std::net::{IpAddr};
 use std::str::FromStr;
 
 use arti_client::{BootstrapBehavior, TorClient};
+use arti_client::config::{CfgPath, TorClientConfigBuilder};
 use lazy_static::lazy_static;
 use tor_rtcompat::PreferredRuntime;
 use warp::{self, Filter};
@@ -16,20 +17,31 @@ lazy_static! {
 static mut COUNTER: i32 = 0;
 
 fn create_new_tor_connection() -> TorClient<PreferredRuntime> {
-    TorClient::builder()
+    let mut conf = TorClientConfigBuilder::default();
+    conf.storage().state_dir(CfgPath::new("/tmp/arti-state".into()));
+    let config = conf.build().unwrap();
+
+    match TorClient::builder()
         .bootstrap_behavior(BootstrapBehavior::OnDemand)
+        .config(config)
         .create_unbootstrapped()
-        .ok()
-        .unwrap()
+    {
+        Ok(client) => client,
+        Err(e) => {
+            eprintln!("Failed to create Tor client: {:?}", e);
+            std::process::exit(1);
+        }
+    }
 }
 
 #[tokio::main]
 async fn main() {
+    println!("Who is server started time:{:?}", chrono::offset::Local::now());
     let whois = warp::path("whois")
         .and(warp::query::<HashMap<String, String>>())
         .and_then(whois_handler);
 
-    warp::serve(whois).run(([127, 0, 0, 1], 8016)).await;
+    warp::serve(whois).run(([0, 0, 0, 0], 8016)).await;
 }
 
 async fn whois_handler(query: HashMap<String, String>) -> Result<impl warp::Reply, warp::Rejection> {
@@ -43,7 +55,7 @@ async fn whois_handler(query: HashMap<String, String>) -> Result<impl warp::Repl
         println!("{}-ip:{}", COUNTER, ip);
     }
     Ok(match IpAddr::from_str(ip) {
-        Ok(ip_addr) => warp::reply::with_status(get_whois_data(ip).await, StatusCode::OK),
+        Ok(_ip_addr) => warp::reply::with_status(get_whois_data(ip).await, StatusCode::OK),
         Err(_) => warp::reply::with_status("wrong ip".to_string(), StatusCode::BAD_REQUEST),
     })
 }
@@ -56,7 +68,7 @@ async fn whois_handler_old(query: HashMap<String, String>) -> Result<impl warp::
         println!("{}-ip:{}", COUNTER, ip);
     }
     if IpAddr::from_str(ip).is_ok() {
-        let response=get_whois_data(ip).await;
+        let response = get_whois_data(ip).await;
         // TODO maybe in the future we can restart from code.
         // if response.contains("access denied"){
         //
