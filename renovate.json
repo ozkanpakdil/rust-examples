@@ -4,6 +4,8 @@
     "config:recommended",
     "schedule:monthly"
   ],
+  "automerge": true,
+  "platformAutomerge": true,
   "packageRules": [
     {
       "matchFileNames": [
@@ -19,7 +21,6 @@
         "api"
       ],
       "commitMessagePrefix": "chore(deps):",
-      "automerge": true,
       "automergeType": "pr",
       "automergeStrategy": "squash"
     }
