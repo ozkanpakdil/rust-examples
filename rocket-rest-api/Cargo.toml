@@ -6,8 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rocket = { version = "0.5.0", features = ["json"] }
-chrono = "0.4.31"
+rocket = { version = "0.5.1", features = ["json"] }
+log = { version = "0.4", features = ["release_max_level_off"] }
+chrono = "0.4.40"
 
 [profile.release]
 strip = true

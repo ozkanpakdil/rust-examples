@@ -1,5 +1,3 @@
-#![feature(proc_macro_hygiene, decl_macro)]
-
 use chrono::{Datelike, Utc};
 use rocket::data::Limits;
 use rocket::serde::json::{Json};

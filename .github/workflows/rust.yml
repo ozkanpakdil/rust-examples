@@ -24,7 +24,7 @@ jobs:
         cargo build --release
         cd ../rocket-rest-api/
         # rocket requires nightly
-        rustup override set nightly
+        # rustup override set nightly
         cargo build --release
     - uses: "marvinpinto/action-automatic-releases@latest"
       with:
