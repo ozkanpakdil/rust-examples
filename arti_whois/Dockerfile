@@ -17,7 +17,7 @@ RUN --mount=type=bind,source=src,target=src \
 cargo build --locked --release && \
 cp ./target/release/$APP_NAME /bin/server
 
-FROM alpine:3.18 AS final
+FROM alpine:3.22 AS final
 
 USER root
 COPY --from=build /bin/server /bin/
