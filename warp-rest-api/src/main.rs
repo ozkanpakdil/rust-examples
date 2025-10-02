@@ -14,7 +14,7 @@ async fn main() {
     let hello = warp::any().map(|| {
         let app_info = ApplicationInfo {
             name: String::from("rust-warp"),
-            year: chrono::Utc::now().date().year(),
+            year: chrono::Utc::now().date_naive().year(),
         };
         warp::reply::json(&app_info)
     });
