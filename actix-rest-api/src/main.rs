@@ -11,7 +11,7 @@ struct AppInfo {
 async fn index() -> impl Responder {
     let app_info = AppInfo {
         name: String::from("rust-actix"),
-        year: chrono::Utc::now().date().year(),
+        year: chrono::Utc::now().date_naive().year(),
     };
     HttpResponse::Ok().json(&app_info)
 }
