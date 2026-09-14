@@ -18,7 +18,8 @@ static mut COUNTER: i32 = 0;
 
 fn create_new_tor_connection() -> TorClient<PreferredRuntime> {
     let mut conf = TorClientConfigBuilder::default();
-    conf.storage().state_dir(CfgPath::new("/tmp/arti-state".into()));
+    let state_dir = std::env::var("ARTI_STATE").unwrap_or_else(|_| "/tmp/arti-state".to_string());
+    conf.storage().state_dir(CfgPath::new(state_dir.into()));
     let config = conf.build().unwrap();
 
     match TorClient::builder()
@@ -41,7 +42,12 @@ async fn main() {
         .and(warp::query::<HashMap<String, String>>())
         .and_then(whois_handler);
 
-    warp::serve(whois).run(([0, 0, 0, 0], 8016)).await;
+    let port: u16 = std::env::var("ARTI_PORT")
+        .ok()
+        .and_then(|p| p.parse().ok())
+        .unwrap_or(8016);
+    println!("arti_whois listening on 127.0.0.1:{} state dir {:?}", port, std::env::var("ARTI_STATE").as_deref().unwrap_or("/tmp/arti-state"));
+    warp::serve(whois).run(([127, 0, 0, 1], port)).await;
 }
 
 async fn whois_handler(query: HashMap<String, String>) -> Result<impl warp::Reply, warp::Rejection> {
