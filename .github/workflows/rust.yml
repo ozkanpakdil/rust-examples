@@ -28,6 +28,14 @@ jobs:
         cargo build --release
         cd ../salvo-rest-api/
         cargo build --release
+        cd ../poem-rest-api/
+        cargo build --release
+        cd ../gotham-rest-api/
+        cargo build --release
+        cd ../viz-rest-api/
+        cargo build --release
+        cd ../trillium-rest-api/
+        cargo build --release
     - uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -40,3 +48,7 @@ jobs:
           actix-rest-api/target/release/actix-rest-api
           axum-rest-api/target/release/axum-rest-api
           salvo-rest-api/target/release/salvo-rest-api
+          poem-rest-api/target/release/poem-rest-api
+          gotham-rest-api/target/release/gotham-rest-api
+          viz-rest-api/target/release/viz-rest-api
+          trillium-rest-api/target/release/trillium-rest-api

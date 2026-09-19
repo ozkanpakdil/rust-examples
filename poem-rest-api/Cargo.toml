@@ -1,0 +1,18 @@
+[package]
+name = "poem-rest-api"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+poem = "3.1.12"
+chrono = "0.4.40"
+serde = "1.0.218"
+serde_derive = "1.0.218"
+tokio = { version = "1.43.0", features = ["full"] }
+
+[profile.release]
+strip = true
+lto = true
+codegen-units = 1
