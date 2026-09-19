@@ -4,3 +4,4 @@ target/
 .cargo-lock
 *.pdb
 
+.DS_Store

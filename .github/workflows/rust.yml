@@ -26,6 +26,8 @@ jobs:
         # rocket requires nightly
         # rustup override set nightly
         cargo build --release
+        cd ../salvo-rest-api/
+        cargo build --release
     - uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -37,3 +39,4 @@ jobs:
           warp-rest-api/target/release/warp-rest-api
           actix-rest-api/target/release/actix-rest-api
           axum-rest-api/target/release/axum-rest-api
+          salvo-rest-api/target/release/salvo-rest-api
