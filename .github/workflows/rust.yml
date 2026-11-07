@@ -1,11 +1,10 @@
 name: Rust
 
 on:
-  push:
-    branches: [ "main" ]
   schedule:
-    - cron: '0 0 1 * *'
-    
+    - cron: '0 10 5 * *'
+  workflow_dispatch:
+  
 env:
   CARGO_TERM_COLOR: always
 
